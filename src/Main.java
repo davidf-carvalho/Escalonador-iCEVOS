@@ -1,29 +1,55 @@
 public class Main {
+
+    private static final String arquivoPadrao = "processos.txt";
+
     public static void main(String[] args) {
-        System.out.println("=== Teste Lista Ligada ===");
+        exibirCabecalho();
 
-        ListaDeProcessos lista = new ListaDeProcessos();
+        Scheduler scheduler = new Scheduler();
+        String nomeArquivo = obterNomeArquivo(args);
 
-        System.out.println("Lista vazia: " + lista);
-        System.out.println("Tamanho: " + lista.size());
-        System.out.println("Está vazia? " + lista.isEmpty());
+        boolean sucesso = LeitorArquivo.carregarProcessos(nomeArquivo, scheduler);
 
-        Processo p1 = new Processo(1, "Proc1", 1, 3, null);
-        Processo p2 = new Processo(2, "Proc2", 2, 2, "DISCO");
-        Processo p3 = new Processo(3, "Proc3", 3, 1, null);
+        if (!sucesso) {
+            System.out.println("💡 Para criar seu proprio arquivo:");
+            LeitorArquivo.exibirFormatoAjuda();
+        }
 
-        lista.adicionar(p1);
-        lista.adicionar(p2);
-        lista.adicionar(p3);
+        iniciarExecucao(scheduler);
+    }
 
-        System.out.println("Lista após adições: " + lista);
-        System.out.println("Tamanho: " + lista.size());
+    private static void exibirCabecalho() {
+        System.out.println("╔══════════════════════════════════════════════════════════╗");
+        System.out.println("║              SISTEMA OPERACIONAL iCEVOS                 ║");
+        System.out.println("║         ESCALONADOR DE PROCESSOS v1.0                   ║");
+        System.out.println("║    com Anti Inanicao e Gerenciamento de Recursos        ║");
+        System.out.println("╚══════════════════════════════════════════════════════════╝");
+    }
 
-        System.out.println("Primeiro (peek): " + lista.peek());
+    private static String obterNomeArquivo(String[] args) {
+        if (args.length > 0) {
+            System.out.println("📁 Arquivo especificado: " + args[0]);
+            return args[0];
+        } else {
+            System.out.println("📁 Usando arquivo padrão: " + arquivoPadrao);
+            System.out.println("💡 Use: java Main <arquivo> para especificar outro arquivo");
+            return arquivoPadrao;
+        }
+    }
 
-        Processo removido = lista.removerPrimeiro();
-        System.out.println("Removido: " + removido);
-        System.out.println("Lista após remoção: " + lista);
-        System.out.println("Tamanho: " + lista.size());
+    private static void iniciarExecucao(Scheduler scheduler) {
+        System.out.println("\n🚀 Iniciando execucao do scheduler...");
+        System.out.println("💡 Pressione Ctrl+C para interromper a qualquer momento");
+        System.out.println("");
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        scheduler.executarCompleto();
+
+        System.out.println("\n🎯 Execucao do iCEVOS finalizada!");
     }
 }
